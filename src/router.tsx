@@ -4,11 +4,22 @@ import { UsersPage } from '@/pages/UsersPage'
 import { GoogleAuthPage } from '@/pages/GoogleAuthPage'
 import { GoogleCallbackPage } from '@/pages/GoogleCallbackPage'
 import { CalendarConfigPage } from '@/pages/CalendarConfigPage'
+import { LoginPage } from '@/pages/LoginPage'
+import { NotFoundPage } from '@/pages/NotFoundPage'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
     path: '/',
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -35,5 +46,9 @@ export const router = createBrowserRouter([
   {
     path: '/enterprises/:slug/google-calendar/callback',
     element: <GoogleCallbackPage />,
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ])
