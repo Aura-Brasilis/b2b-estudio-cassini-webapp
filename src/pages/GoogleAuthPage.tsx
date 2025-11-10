@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/common/Button'
-import { useGoogleAuthUrl, useGoogleDisconnect } from '@/hooks/useGoogleAuth'
+import { useGoogleAuthUrl, useGoogleDisconnect, useGoogleConnectionStatus } from '@/hooks/useGoogleAuth'
 import { useEnterpriseStore } from '@/store/enterpriseStore'
-import { Calendar, CheckCircle, XCircle } from 'lucide-react'
+import { Calendar, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
 
 export function GoogleAuthPage() {
   const googleConnected = useEnterpriseStore((state) => state.googleConnected)
   const { refetch: getAuthUrl, isFetching } = useGoogleAuthUrl()
+  const { refetch: refreshStatus, isRefetching } = useGoogleConnectionStatus()
   const disconnect = useGoogleDisconnect()
   const [isConnecting, setIsConnecting] = useState(false)
 
@@ -29,6 +30,10 @@ export function GoogleAuthPage() {
     }
   }
 
+  const handleRefreshStatus = async () => {
+    await refreshStatus()
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
@@ -44,18 +49,29 @@ export function GoogleAuthPage() {
               Gerencie a conexão com o Google Calendar
             </p>
           </div>
-          <div>
-            {googleConnected ? (
-              <div className="flex items-center gap-2 text-green-600">
-                <CheckCircle size={24} />
-                <span className="font-medium">Conectado</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-red-600">
-                <XCircle size={24} />
-                <span className="font-medium">Desconectado</span>
-              </div>
-            )}
+          <div className="flex items-center gap-3">
+            <div>
+              {googleConnected ? (
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle size={24} />
+                  <span className="font-medium">Conectado</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-red-600">
+                  <XCircle size={24} />
+                  <span className="font-medium">Desconectado</span>
+                </div>
+              )}
+            </div>
+            <Button
+              onClick={handleRefreshStatus}
+              variant="secondary"
+              isLoading={isRefetching}
+              title="Verificar status real no banco de dados"
+              className="px-3 py-2"
+            >
+              <RefreshCw size={16} />
+            </Button>
           </div>
         </div>
 

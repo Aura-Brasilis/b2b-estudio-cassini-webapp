@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { googleCalendarService } from '@/services/googleCalendarService'
 import { useEnterpriseStore } from '@/store/enterpriseStore'
 import toast from 'react-hot-toast'
@@ -43,15 +43,30 @@ export function useGoogleConnect() {
 
 export function useGoogleDisconnect() {
   const setGoogleConnected = useEnterpriseStore((state) => state.setGoogleConnected)
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: googleCalendarService.disconnect,
     onSuccess: (data) => {
       setGoogleConnected(false)
       toast.success(data.message)
+      // Invalida o cache para forçar verificação no próximo acesso
+      queryClient.invalidateQueries({ queryKey: ['google-connection-status'] })
     },
-    onError: (error: Error) => {
+    onError: async (error: Error) => {
       toast.error(`Erro ao desconectar: ${error.message}`)
+      // Verifica o status real no banco de dados após erro
+      try {
+        const status = await googleCalendarService.getConnectionStatus()
+        setGoogleConnected(status.connected)
+        queryClient.setQueryData(['google-connection-status'], status)
+
+        if (!status.connected) {
+          toast.success('Status sincronizado com o banco de dados')
+        }
+      } catch (syncError) {
+        console.error('Erro ao sincronizar status:', syncError)
+      }
     },
   })
 }
