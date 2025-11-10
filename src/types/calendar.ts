@@ -46,6 +46,14 @@ export interface CalendarSlotsResponse {
 }
 
 export interface GoogleConnectionStatus {
-  connected: boolean
+  isConnected: boolean
   googleEmail?: string
+  connectedAt?: string
+  config?: {
+    calendarId: string
+    workStartHour: number
+    workEndHour: number
+    workDays: string
+    slotDurationMinutes: number
+  }
 }

@@ -10,7 +10,8 @@ export function useGoogleConnectionStatus() {
     queryKey: ['google-connection-status'],
     queryFn: async () => {
       const status = await googleCalendarService.getConnectionStatus()
-      setGoogleConnected(status.connected)
+      // Usa isConnected da API
+      setGoogleConnected(status.isConnected)
       return status
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -58,10 +59,10 @@ export function useGoogleDisconnect() {
       // Verifica o status real no banco de dados após erro
       try {
         const status = await googleCalendarService.getConnectionStatus()
-        setGoogleConnected(status.connected)
+        setGoogleConnected(status.isConnected)
         queryClient.setQueryData(['google-connection-status'], status)
 
-        if (!status.connected) {
+        if (!status.isConnected) {
           toast.success('Status sincronizado com o banco de dados')
         }
       } catch (syncError) {
