@@ -6,7 +6,7 @@ import { Button } from '@/components/common/Button'
 import toast from 'react-hot-toast'
 
 export function Header() {
-  const slug = useEnterpriseStore((state) => state.slug)
+  const slugFounded = useEnterpriseStore((state) => state.slug)
   const logout = useAuthStore((state) => state.logout)
   const navigate = useNavigate()
 
@@ -22,7 +22,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <Building2 className="text-blue-600" size={24} />
           <h1 className="text-xl font-semibold text-gray-900">
-            Gerenciamento - {slug}
+            Gerenciamento - {slugFounded}
           </h1>
         </div>
 
